@@ -413,19 +413,121 @@ plastic_data_all %&gt;% head(n = 10)</code></pre>
 <h2>Exercises</h2>
 <div id="ex-1." class="section level3">
 <h3>Ex 1.</h3>
-<pre class="r"><code># Write your code here to answer exercise 1</code></pre>
+<pre class="r"><code># Create a frequency table of coastal countries/territories by region.
+plastic_data_all %&gt;%
+  count(region)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                              n
+##   &lt;chr&gt;                           &lt;int&gt;
+## 1 Africa                             43
+## 2 Asia                               39
+## 3 Europe                             31
+## 4 Latin America and The Caribbean    34
+## 5 North America                       2
+## 6 Oceania                            10</code></pre>
+<pre class="r"><code># Which region has the most number of coastal countries/territories?
+plastic_data_all %&gt;%
+  count(region, sort = TRUE)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                              n
+##   &lt;chr&gt;                           &lt;int&gt;
+## 1 Africa                             43
+## 2 Asia                               39
+## 3 Latin America and The Caribbean    34
+## 4 Europe                             31
+## 5 Oceania                            10
+## 6 North America                       2</code></pre>
 </div>
 <div id="ex-2." class="section level3">
 <h3>Ex 2.</h3>
-<pre class="r"><code># Write your code here to answer exercise 2</code></pre>
+<pre class="r"><code># The mismanaged plastic waste is measured in kg per capita. Add a new variable to plastic_data_all called total_mismanage_plastic by multiplying mismanaged_plastic by population.
+plastic_data_all &lt;-plastic_data_all %&gt;%
+  mutate(total_mismanage_plastic = mismanaged_plastic * population)
+# What is the mean total of mismanaged plastic waste per region?
+plastic_data_all %&gt;%
+  group_by(region) %&gt;%
+  summarise(mean_total = mean(total_mismanage_plastic))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          mean_total
+##   &lt;chr&gt;                                &lt;dbl&gt;
+## 1 Africa                             320729.
+## 2 Asia                              1026059.
+## 3 Europe                              38180.
+## 4 Latin America and The Caribbean    193450.
+## 5 North America                      147190.
+## 6 Oceania                             14577.</code></pre>
+<pre class="r"><code># Which region has the highest total and which has the lowest total?
+plastic_data_all %&gt;%
+  group_by(region) %&gt;%
+  summarise(mean_total = mean(total_mismanage_plastic)) %&gt;%
+  arrange(desc(mean_total))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          mean_total
+##   &lt;chr&gt;                                &lt;dbl&gt;
+## 1 Asia                              1026059.
+## 2 Africa                             320729.
+## 3 Latin America and The Caribbean    193450.
+## 4 North America                      147190.
+## 5 Europe                              38180.
+## 6 Oceania                             14577.</code></pre>
 </div>
 <div id="ex-3." class="section level3">
 <h3>Ex 3.</h3>
-<pre class="r"><code># Write your code here to answer exercise 3</code></pre>
+<pre class="r"><code># Add a new variable called pct_mismanaged_plastic_ocean to plastic_data_all that represents the amount of ocean emitted mismanaged plastic waste as a percentage of all mismanaged plastic waste.
+plastic_data_all &lt;-plastic_data_all %&gt;%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
+# Calculate the median pct_mismanaged_plastic_ocean for each region.
+plastic_data_all %&gt;%
+  group_by(region) %&gt;%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                           med_pct
+##   &lt;chr&gt;                              &lt;dbl&gt;
+## 1 Africa                          NA      
+## 2 Asia                             0.00974
+## 3 Europe                           0.00846
+## 4 Latin America and The Caribbean  0.0307 
+## 5 North America                    0.00959
+## 6 Oceania                          0.0158</code></pre>
+<pre class="r"><code># filter your data using code == &quot;SOM&quot;.
+plastic_data_all %&gt;%
+  filter(code == &quot;SOM&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##   code  region population mismanaged_plastic_ocean name    mismanaged_plastic
+##   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;                    &lt;dbl&gt; &lt;chr&gt;                &lt;dbl&gt;
+## 1 SOM   Africa     15690.                        0 Somalia                  0
+## # ℹ 2 more variables: total_mismanage_plastic &lt;dbl&gt;,
+## #   pct_mismanaged_plastic_ocean &lt;dbl&gt;</code></pre>
+<pre class="r"><code># Add the command drop_na() after computing the variable … and re-evaluate the median estimates. Which region has the lowest median?
+plastic_data_all %&gt;%
+  drop_na() %&gt;%
+  group_by(region) %&gt;%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean)) %&gt;%
+  arrange(med_pct)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          med_pct
+##   &lt;chr&gt;                             &lt;dbl&gt;
+## 1 Africa                          0.00526
+## 2 Europe                          0.00846
+## 3 North America                   0.00959
+## 4 Asia                            0.00974
+## 5 Oceania                         0.0158 
+## 6 Latin America and The Caribbean 0.0307</code></pre>
 </div>
 <div id="ex-4." class="section level3">
 <h3>Ex 4.</h3>
-<pre class="r"><code># Write your code here to answer exercise 4</code></pre>
+<pre class="r"><code># Use the rename() command to replace the existing variable names with something that is more concise.
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  rename(
+    pop = all_of(&quot;population&quot;),
+    ocean_plastic = all_of(&quot;mismanaged_plastic_ocean&quot;),
+    mismanaged = all_of(&quot;mismanaged_plastic&quot;),
+    tot_plastic = all_of(&quot;total_mismanage_plastic&quot;),
+    pct_ocean = all_of(&quot;pct_mismanaged_plastic_ocean&quot;)
+  )
+# Mutate the region variable to replace the text &quot;Latin America and The Caribbean&quot; with &quot;LAC&quot;.
+plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(region = str_replace_all(region, &quot;Latin America and The Caribbean&quot;, &quot;LAC&quot;))</code></pre>
 </div>
 </div>
 

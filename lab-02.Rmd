@@ -52,11 +52,10 @@ plastic_data_all <- data4 %>%
 ```
 
 
+
 ```{r print-data, message = FALSE}
 # Member 2 (pair 1) adds code here to view the first 10 rows of 'plastic_data_all'
 plastic_data_all %>% head(n = 10)
-
-
 ```
 
 
@@ -66,10 +65,12 @@ plastic_data_all %>% head(n = 10)
 ### Ex 1.
 
 ```{r Ex1, message = FALSE}
-# Write your code here to answer exercise 1
-
-
-
+# Create a frequency table of coastal countries/territories by region.
+plastic_data_all %>%
+  count(region)
+# Which region has the most number of coastal countries/territories?
+plastic_data_all %>%
+  count(region, sort = TRUE)
 ```
 
 
@@ -77,28 +78,58 @@ plastic_data_all %>% head(n = 10)
 ### Ex 2.
 
 ```{r Ex2, message = FALSE}
-# Write your code here to answer exercise 2
-
-
-
+# The mismanaged plastic waste is measured in kg per capita. Add a new variable to plastic_data_all called total_mismanage_plastic by multiplying mismanaged_plastic by population.
+plastic_data_all <-plastic_data_all %>%
+  mutate(total_mismanage_plastic = mismanaged_plastic * population)
+# What is the mean total of mismanaged plastic waste per region?
+plastic_data_all %>%
+  group_by(region) %>%
+  summarise(mean_total = mean(total_mismanage_plastic))
+# Which region has the highest total and which has the lowest total?
+plastic_data_all %>%
+  group_by(region) %>%
+  summarise(mean_total = mean(total_mismanage_plastic)) %>%
+  arrange(desc(mean_total))
 ```
 
 
 ### Ex 3.
 
 ```{r Ex3, message = FALSE}
-# Write your code here to answer exercise 3
-
-
-
+# Add a new variable called pct_mismanaged_plastic_ocean to plastic_data_all that represents the amount of ocean emitted mismanaged plastic waste as a percentage of all mismanaged plastic waste.
+plastic_data_all <-plastic_data_all %>%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
+# Calculate the median pct_mismanaged_plastic_ocean for each region.
+plastic_data_all %>%
+  group_by(region) %>%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))
+# filter your data using code == "SOM".
+plastic_data_all %>%
+  filter(code == "SOM")
+# Add the command drop_na() after computing the variable … and re-evaluate the median estimates. Which region has the lowest median?
+plastic_data_all %>%
+  drop_na() %>%
+  group_by(region) %>%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean)) %>%
+  arrange(med_pct)
 ```
 
 
 ### Ex 4.
 
 ```{r Ex4, message = FALSE}
-# Write your code here to answer exercise 4
-
+# Use the rename() command to replace the existing variable names with something that is more concise.
+plastic_data_all <- plastic_data_all %>%
+  rename(
+    pop = all_of("population"),
+    ocean_plastic = all_of("mismanaged_plastic_ocean"),
+    mismanaged = all_of("mismanaged_plastic"),
+    tot_plastic = all_of("total_mismanage_plastic"),
+    pct_ocean = all_of("pct_mismanaged_plastic_ocean")
+  )
+# Mutate the region variable to replace the text "Latin America and The Caribbean" with "LAC".
+plastic_data_all <- plastic_data_all %>%
+  mutate(region = str_replace_all(region, "Latin America and The Caribbean", "LAC"))
 
 
 ```
